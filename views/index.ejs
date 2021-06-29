@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" action="/store">
+        <input list="suggestions"type="text" id="data" name="data" />
+        <datalist id="suggestions">
+
+        </datalist>
+        <button>store</button>
+
+    </form>
+</body>
+<script>
+    const values = ["america", 'africa', 'antarctica', 'europe', 'asia'];
+    const input = document.querySelector("input");
+    const button = document.querySelector("button")
+    button.addEventListener("click", ()=>{
+        fetch("http://localhost:3000/store", {
+            method: "POST",
+            body: JSON.stringify({
+                jd : input.value,
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+    });
+
+    const suggestions  = document.querySelector("datalist")
+    input.addEventListener("input", (e)=>{
+        var option  = document.createElement("option");
+        fetch("http://localhost:3000/getsuggestions", {
+            method: "POST",
+            body: JSON.stringify({
+                jd : input.value
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+      }
+  })
+  .then(response => response.json())
+  .then(json => {
+        json.data.forEach(element => {
+            var option  = document.createElement("option");
+            option.value = element;
+            suggestions.appendChild(option);
+        });
+  });
+    })
+</script>
+</html>
