@@ -20,12 +20,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 //routes
 app.post('/store', async (req, res)=>{
-    const jd = await req.body.jd;
+    const jd = req.body.jd;
     redisClient.hset(`job_description:${Math.random() * 1000}`, "jd", jd, ()=> console.log("value added"));
     res.redirect('/');
 })
 app.post("/getsuggestions", (req, res)=>{
-    const result = redisClient.send_command(`FT.CREATE idx:job_description ${jd} RETURN 3 jd`);
+    const jd = req.body.jd;
+    const result = redisClient.send_command(`FT.SEARCH idx:job_description ${jd} RETURN 3 jd`);
     // FT.SEARCH idx:job_description "@jd:soft" RETURN 3 jd - for searching a particular field
     // FT.SEARCH idx:job_description "soft*" RETURN 3   jd  - prefix matches
     //  FT.SEARCH idx:job_description "%ware%" RETURN 3 jd  - fuzzy search
